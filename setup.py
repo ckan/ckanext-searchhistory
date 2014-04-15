@@ -24,7 +24,6 @@ setup(
     ],
     entry_points='''
         [ckan.plugins]
-        # Add plugins here, e.g.
-        # myplugin=ckanext.searchhistory.plugin:PluginClass
+        search_history=ckanext.searchhistory.plugin:SearchHistoryPlugin
     ''',
 )

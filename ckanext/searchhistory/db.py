@@ -35,7 +35,7 @@ def init_db(model):
                     id text NOT NULL,
                     content text,
                     user_id text NOT NULL,
-                    created timestamp without time zone,
+                    created timestamp without time zone
                 );
     '''
     conn = model.Session.connection()

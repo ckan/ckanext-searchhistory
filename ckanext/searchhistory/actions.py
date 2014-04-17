@@ -31,6 +31,7 @@ def search_add(context, data_dict):
     return None
 
 
+@tk.side_effect_free
 def search_list(context, data_dict):
     '''
     List the search history
@@ -44,10 +45,10 @@ def search_list(context, data_dict):
         tk.abort(401, tk._('Not authorized to view history item'))
     if db.search_history_table is None:
         db.init_db(context['model'])
-    user_dict = context['user']
-    user = new_authz.get_user_id_for_username(user, allow_none=False)
+    username = context.get('user')
+    user = new_authz.get_user_id_for_username(username, allow_none=False)
     limit = data_dict.get('limt')
-    history = db.SearchHistory.search_history(user=user, limit=limit)
+    history = db.SearchHistory.search_history(user_id=user, limit=limit)
     if history:
         history = db.table_dictize(out, context)
     return history

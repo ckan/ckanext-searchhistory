@@ -17,16 +17,16 @@ def init_db(model):
     class _SearchHistory(model.DomainObject):
 
         @classmethod
-        def search_hisotry(cls, **kw):
+        def search_history(cls, **kw):
             '''Finds search history for a single user.'''
-            user = kw.pop('user', None)
+            limit = kw.pop('limit', None)
             if user is None:
                 raise Exception('`search_history` function needs a user')
 
             query = model.Session.query(cls).autoflush(False)
             query = query.filter_by(**kw)
-            query = query.order_by(sa.sql.expression.desc(cls.created))
-            query = query.limit(10)
+            query = query.order_by(sa.desc(cls.created))
+            query = query.limit(limit)
             return query.all()
 
     global SearchHistory

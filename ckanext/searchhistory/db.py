@@ -18,11 +18,8 @@ def init_db(model):
 
         @classmethod
         def search_history(cls, **kw):
-            '''Finds search history for a single user.'''
+            '''Finds search history according to given params.'''
             limit = kw.pop('limit', None)
-            if user is None:
-                raise Exception('`search_history` function needs a user')
-
             query = model.Session.query(cls).autoflush(False)
             query = query.filter_by(**kw)
             query = query.order_by(sa.desc(cls.created))

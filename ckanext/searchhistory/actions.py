@@ -28,7 +28,20 @@ def search_add(context, data_dict):
         tk.check_access('ckanext_search_history_add', context, data_dict)
     except tk.NotAuthorized:
         tk.abort(401, tk._('Not authorized to add history item'))
-    return None
+    if db.search_history_table is None:
+        db.init_db(context['model'])
+
+    content = tk.get_or_bust(data_dict, 'content')
+    username = context.get('user')
+    user_id = new_authz.get_user_id_for_username(username, allow_none=False)
+
+    search_history = db.SearchHistory()
+    search_history.content = content
+    search_history.user_id = user_id
+    session = context['session']
+    session.add(search_history)
+    session.commit()
+    return db.table_dictize(search_history, context)
 
 
 @tk.side_effect_free
@@ -39,16 +52,15 @@ def search_list(context, data_dict):
     :param limit: The number of items to show (optional, default: 10)
     :type limit: int
     '''
-    try:
-        tk.check_access('ckanext_search_history_list', context, data_dict)
-    except tk.NotAuthorized:
-        tk.abort(401, tk._('Not authorized to view history item'))
+    tk.check_access('ckanext_search_history_list', context, data_dict)
     if db.search_history_table is None:
         db.init_db(context['model'])
     username = context.get('user')
     user = new_authz.get_user_id_for_username(username, allow_none=False)
     limit = data_dict.get('limt')
     history = db.SearchHistory.search_history(user_id=user, limit=limit)
+    result = []
     if history:
-        history = db.table_dictize(out, context)
-    return history
+        for item in history:
+            result.append(db.table_dictize(item, context))
+    return result

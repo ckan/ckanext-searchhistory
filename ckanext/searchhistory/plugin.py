@@ -7,6 +7,7 @@ import auth
 class SearchHistoryPlugin(p.SingletonPlugin):
     p.implements(p.IActions, inherit=True)
     p.implements(p.IAuthFunctions, inherit=True)
+    p.implements(p.IPackageController, inherit=True)
 
     # Override package_search with for_view and if logged in user
 
@@ -21,3 +22,12 @@ class SearchHistoryPlugin(p.SingletonPlugin):
             'ckanext_search_history_list': auth.search_list,
             'ckanext_search_history_add': auth.search_add,
         }
+
+    def before_search(self, search_params):
+        import ckan.model
+        context = {'model': ckan.model, 'user': tk.c.user}
+        if search_params.get('q') and tk.c.user:
+            data_dict = {'content': search_params.get('q')}
+            result = tk.get_action('ckanext_search_history_add')(context, data_dict)
+            print result
+        return search_params

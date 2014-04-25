@@ -49,12 +49,18 @@ def search_list(context, data_dict):
     :param limit: The number of items to show (optional, default: 10)
     :type limit: int
     '''
-    tk.check_access('search_history_list', context, data_dict)
     if db.search_history_table is None:
         db.init_db(context['model'])
+
+    tk.check_access('search_history_list', context, data_dict)
+
     username = context.get('user')
     user = new_authz.get_user_id_for_username(username, allow_none=False)
-    limit = data_dict.get('limt')
+    # Get the limit and put a hard upper limit on it
+    limit = data_dict.get('limt', 10)
+    if limit > 25:
+        limit = 25
+
     history = db.SearchHistory.search_history(user_id=user, limit=limit)
     result = []
     if history:

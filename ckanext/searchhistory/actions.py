@@ -24,10 +24,7 @@ def search_add(context, data_dict):
     :param content: Search query to add to history
     :type content: string
     '''
-    try:
-        tk.check_access('search_history_add', context, data_dict)
-    except tk.NotAuthorized:
-        tk.abort(401, tk._('Not authorized to add history item'))
+    tk.check_access('search_history_add', context, data_dict)
     if db.search_history_table is None:
         db.init_db(context['model'])
 

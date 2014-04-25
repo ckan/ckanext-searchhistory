@@ -24,8 +24,7 @@ class SearchHistoryPlugin(p.SingletonPlugin):
         }
 
     def before_search(self, search_params):
-        import ckan.model
-        context = {'model': ckan.model, 'user': tk.c.user}
+        context = {}
         if search_params.get('q') and tk.c.user:
             data_dict = {'content': search_params.get('q')}
             result = tk.get_action('search_history_add')(context, data_dict)

@@ -21,8 +21,8 @@ def search_add(context, data_dict):
     '''
     Add an item to the search_history for the current user.
 
-    :param content: Search query to add to history
-    :type content: string
+    :param param: Search query to add to history
+    :type param: string
     '''
     tk.check_access('search_history_add', context, data_dict)
     if db.search_history_table is None:
@@ -33,7 +33,7 @@ def search_add(context, data_dict):
     user_id = new_authz.get_user_id_for_username(username, allow_none=False)
 
     search_history = db.SearchHistory()
-    search_history.content = content
+    search_history.content = param
     search_history.user_id = user_id
     session = context['session']
     session.add(search_history)

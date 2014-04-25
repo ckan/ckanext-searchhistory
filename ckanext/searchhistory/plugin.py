@@ -13,14 +13,14 @@ class SearchHistoryPlugin(p.SingletonPlugin):
 
     def get_actions(self):
         return {
-            'ckanext_search_history_list': actions.search_list,
-            'ckanext_search_history_add': actions.search_add,
+            'search_history_list': actions.search_list,
+            'search_history_add': actions.search_add,
         }
 
     def get_auth_functions(self):
         return {
-            'ckanext_search_history_list': auth.search_list,
-            'ckanext_search_history_add': auth.search_add,
+            'search_history_list': auth.search_list,
+            'search_history_add': auth.search_add,
         }
 
     def before_search(self, search_params):
@@ -28,6 +28,6 @@ class SearchHistoryPlugin(p.SingletonPlugin):
         context = {'model': ckan.model, 'user': tk.c.user}
         if search_params.get('q') and tk.c.user:
             data_dict = {'content': search_params.get('q')}
-            result = tk.get_action('ckanext_search_history_add')(context, data_dict)
+            result = tk.get_action('search_history_add')(context, data_dict)
             print result
         return search_params

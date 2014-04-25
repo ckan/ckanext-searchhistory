@@ -25,7 +25,7 @@ def search_add(context, data_dict):
     :type content: string
     '''
     try:
-        tk.check_access('ckanext_search_history_add', context, data_dict)
+        tk.check_access('search_history_add', context, data_dict)
     except tk.NotAuthorized:
         tk.abort(401, tk._('Not authorized to add history item'))
     if db.search_history_table is None:
@@ -52,7 +52,7 @@ def search_list(context, data_dict):
     :param limit: The number of items to show (optional, default: 10)
     :type limit: int
     '''
-    tk.check_access('ckanext_search_history_list', context, data_dict)
+    tk.check_access('search_history_list', context, data_dict)
     if db.search_history_table is None:
         db.init_db(context['model'])
     username = context.get('user')

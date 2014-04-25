@@ -23,7 +23,7 @@ class SearchHistoryPlugin(p.SingletonPlugin):
             'search_history_add': auth.search_add,
         }
 
-    def before_search(self, search_params):
+    def after_search(self, search_params):
         context = {}
         if search_params.get('q') and tk.c.user:
             data_dict = {'content': search_params.get('q')}

@@ -1,5 +1,5 @@
 import datetime
-
+import json
 import ckan.plugins as p
 import ckan.plugins.toolkit as tk
 import ckan.lib.navl.dictization_functions as df
@@ -8,32 +8,36 @@ import ckan.new_authz as new_authz
 import db
 
 
-schema = {
-    'id': [tk.get_validator('ignore_empty'), unicode],
-    'content': [tk.get_validator('ignore_missing'), unicode],
-    'user_id': [tk.get_validator('ignore_missing'), unicode],
-    'created': [tk.get_validator('ignore_missing'),
-                tk.get_validator('isodate')],
-}
+def _convert_to_json(key, data, errors, context):
+    params_dict = data.get(key, [])
+    data[key] = json.dumps(params_dict)
 
+
+schema_add = {
+    'id': [tk.get_validator('ignore_empty'), unicode],
+    'params': [tk.get_validator('ignore_missing'), _convert_to_json],
+    'user_id': [tk.get_validator('ignore_missing'), unicode],
+    'created': [tk.get_validator('ignore')],
+}
 
 def search_add(context, data_dict):
     '''
     Add an item to the search_history for the current user.
 
-    :param param: Search query to add to history
-    :type param: string
+    :param params: Search query to add to history
+    :type params: string
     '''
     tk.check_access('search_history_add', context, data_dict)
     if db.search_history_table is None:
         db.init_db(context['model'])
 
-    content = tk.get_or_bust(data_dict, 'content')
+    data, errors = df.validate(data_dict, schema_add, context)
+
     username = context.get('user')
     user_id = new_authz.get_user_id_for_username(username, allow_none=False)
 
     search_history = db.SearchHistory()
-    search_history.content = param
+    search_history.content = data.get('params')
     search_history.user_id = user_id
     session = context['session']
     session.add(search_history)
@@ -65,5 +69,8 @@ def search_list(context, data_dict):
     result = []
     if history:
         for item in history:
-            result.append(db.table_dictize(item, context))
+            data_dict = db.table_dictize(item, context)
+            params = data_dict.pop('content')
+            data_dict['params'] = json.loads(params)
+            result.append(data_dict)
     return result

@@ -23,10 +23,15 @@ class SearchHistoryPlugin(p.SingletonPlugin):
             'search_history_add': auth.search_add,
         }
 
-    def after_search(self, search_params):
+    def after_search(self, search_results, search_params):
         context = {}
-        if search_params.get('q') and tk.c.user:
-            data_dict = {'content': search_params.get('q')}
+        q = search_params.get('q')
+        fq = search_params.get('fq')
+        if (tk.c and tk.c.user and tk.c.controller == 'package'
+                and tk.c.action == 'search' and
+                ((q is not None and not q in ('', '*:*'))
+                or '+dataset_type:dataset' not in fq[0])):
+            data_dict = {'params': search_params}
             result = tk.get_action('search_history_add')(context, data_dict)
             print result
-        return search_params
+        return search_results

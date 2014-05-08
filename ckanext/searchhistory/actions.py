@@ -37,7 +37,7 @@ def search_add(context, data_dict):
     user_id = new_authz.get_user_id_for_username(username, allow_none=False)
 
     search_history = db.SearchHistory()
-    search_history.content = data.get('params')
+    search_history.params = data.get('params')
     search_history.user_id = user_id
     session = context['session']
     session.add(search_history)
@@ -70,7 +70,6 @@ def search_list(context, data_dict):
     if history:
         for item in history:
             data_dict = db.table_dictize(item, context)
-            params = data_dict.pop('content')
-            data_dict['params'] = json.loads(params)
+            data_dict['params'] = json.loads(data_dict.get('params'))
             result.append(data_dict)
     return result

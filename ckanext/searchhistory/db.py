@@ -33,7 +33,7 @@ def init_db(model):
     sql = '''
                 CREATE TABLE ckanext_searchhistory (
                     id text NOT NULL,
-                    content text,
+                    params text,
                     user_id text NOT NULL,
                     created timestamp without time zone
                 );
@@ -49,7 +49,7 @@ def init_db(model):
     global search_history_table
     search_history_table = sa.Table('ckanext_searchhistory', model.meta.metadata,
         sa.Column('id', types.UnicodeText, primary_key=True, default=make_uuid),
-        sa.Column('content', types.UnicodeText, default=u''),
+        sa.Column('params', types.UnicodeText, default=u''),
         sa.Column('user_id', types.UnicodeText, default=u''),
         sa.Column('created', types.DateTime, default=datetime.datetime.utcnow),
     )

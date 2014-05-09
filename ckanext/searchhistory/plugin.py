@@ -27,6 +27,13 @@ class SearchHistoryPlugin(p.SingletonPlugin):
         context = {}
         q = search_params.get('q')
         fq = search_params.get('fq')
+
+        try:
+            tk.c.user
+        except TypeError:
+            # Web context not ready, eg paster command
+            return search_results
+
         if (tk.c and tk.c.user and tk.c.controller == 'package'
                 and tk.c.action == 'search' and
                 ((q is not None and not q in ('', '*:*'))
